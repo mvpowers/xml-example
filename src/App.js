@@ -5,7 +5,7 @@ const request = require('request');
 
 class App extends Component {
   componentDidMount() {
-    request('https://localhost:3001/bbc', (error, response, body) => {
+    request('http://localhost:3001/bbc', (error, response, body) => {
       console.log('error:', error);
       console.log('statusCode:', response && response.statusCode);
       console.log('body:', body);
