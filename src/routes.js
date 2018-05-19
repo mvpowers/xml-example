@@ -24,4 +24,23 @@ router.get('/bbc', (req, res) => {
   });
 });
 
+router.get('/npr', (req, res) => {
+  request('http://www.npr.org/rss/rss.php?id=1001', (error, response, body) => {
+    if (error) return res.send(error);
+    return parseString(body, (err, result) => {
+      const massaged = result.rss.channel[0].item.map(el =>
+        Object.assign(
+          {},
+          {
+            title: el.title[0],
+            description: el.description[0],
+            link: el.link[0],
+          },
+        ),
+      );
+      res.send(massaged);
+    });
+  });
+});
+
 module.exports = router;
