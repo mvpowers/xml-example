@@ -7,9 +7,7 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      bbc: [],
-      cnn: [],
-      npr: [],
+      results: [],
     };
   }
 
@@ -17,32 +15,32 @@ class App extends Component {
     await request(
       { url: 'http://localhost:3001/bbc', json: true },
       (error, response, body) => {
-        this.setState({ bbc: body });
+        this.setState({ results: [...this.state.results, ...body] });
       },
     );
     await request(
       { url: 'http://localhost:3001/cnn', json: true },
       (error, response, body) => {
-        this.setState({ cnn: body });
+        this.setState({ results: [...this.state.results, ...body] });
       },
     );
     await request(
       { url: 'http://localhost:3001/npr', json: true },
       (error, response, body) => {
-        this.setState({ npr: body });
+        this.setState({ results: [...this.state.results, ...body] });
       },
     );
   }
   render() {
-    const { bbc, cnn, npr } = this.state;
+    const { results } = this.state;
     return (
       <div>
-        {bbc.length === 0 || cnn.length === 0 || npr.length === 0 ? (
+        {results.length === 0 ? (
           <Loader active />
         ) : (
           <Segment basic>
             <Card.Group>
-              {[...bbc, ...cnn, ...npr].map(article => (
+              {results.map(article => (
                 <Card key={article.title} href={article.link} target="_blank">
                   <Image src={article.thumbnail} />
                   <Card.Content>
