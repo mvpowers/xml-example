@@ -1,25 +1,61 @@
 import React, { Component } from 'react';
-import { Segment, Card } from 'semantic-ui-react';
+import { Segment, Card, Loader, Image } from 'semantic-ui-react';
 
 const request = require('request');
 
 class App extends Component {
-  componentDidMount() {
-    request('http://localhost:3001/bbc', (error, response, body) => {
-      console.log('body:', body);
-    });
-    request('http://localhost:3001/npr', (error, response, body) => {
-      console.log('body:', body);
-    });
+  constructor() {
+    super();
+    this.state = {
+      bbc: [],
+      cnn: [],
+      npr: [],
+    };
+  }
+
+  async componentDidMount() {
+    await request(
+      { url: 'http://localhost:3001/bbc', json: true },
+      (error, response, body) => {
+        this.setState({ bbc: body });
+      },
+    );
+    await request(
+      { url: 'http://localhost:3001/cnn', json: true },
+      (error, response, body) => {
+        this.setState({ cnn: body });
+      },
+    );
+    await request(
+      { url: 'http://localhost:3001/npr', json: true },
+      (error, response, body) => {
+        this.setState({ npr: body });
+      },
+    );
   }
   render() {
+    const { bbc, cnn, npr } = this.state;
     return (
-      <Segment>
-        <Card>
-          <Card.Header>what up</Card.Header>
-          <Card.Content>world</Card.Content>
-        </Card>
-      </Segment>
+      <div>
+        {bbc.length === 0 || cnn.length === 0 || npr.length === 0 ? (
+          <Loader active />
+        ) : (
+          <Segment basic>
+            <Card.Group>
+              {[...bbc, ...cnn, ...npr].map(article => (
+                <Card key={article.title} href={article.link} target="_blank">
+                  <Image src={article.thumbnail} />
+                  <Card.Content>
+                    <Card.Header>{article.title}</Card.Header>
+                    <Card.Meta>{article.source}</Card.Meta>
+                    <Card.Description>{article.description}</Card.Description>
+                  </Card.Content>
+                </Card>
+              ))}
+            </Card.Group>
+          </Segment>
+        )}
+      </div>
     );
   }
 }
