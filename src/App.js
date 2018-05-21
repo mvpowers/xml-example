@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Segment, Card, Loader, Image } from 'semantic-ui-react';
+import { Segment, Card, Loader, Image, Input } from 'semantic-ui-react';
 
 const request = require('request');
 
@@ -8,6 +8,7 @@ class App extends Component {
     super();
     this.state = {
       results: [],
+      search: '',
     };
   }
 
@@ -31,16 +32,35 @@ class App extends Component {
       },
     );
   }
+
+  handleChange = e => {
+    this.setState({ [e.target.id]: e.target.value });
+  };
+
   render() {
-    const { results } = this.state;
+    const { results, search } = this.state;
+    const filteredResults = results.filter(
+      article =>
+        article.title.toLowerCase().indexOf(search.toLowerCase()) !== -1 ||
+        article.description.toLowerCase().indexOf(search.toLowerCase()) !== -1,
+    );
     return (
       <div>
         {results.length === 0 ? (
           <Loader active />
         ) : (
           <Segment basic>
+            <Segment basic>
+              <Input
+                id="search"
+                icon="search"
+                placeholder="Search"
+                value={search}
+                onChange={this.handleChange}
+              />
+            </Segment>
             <Card.Group>
-              {results.map(article => (
+              {filteredResults.map(article => (
                 <Card key={article.title} href={article.link} target="_blank">
                   <Image src={article.thumbnail} />
                   <Card.Content>
