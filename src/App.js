@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Segment, Card, Loader, Image, Input } from 'semantic-ui-react';
 
+const uuidv4 = require('uuid/v4');
 const request = require('request');
 
 class App extends Component {
@@ -9,26 +10,36 @@ class App extends Component {
     this.state = {
       results: [],
       search: '',
+      errors: [],
     };
   }
 
-  async componentDidMount() {
-    await request(
+  componentDidMount() {
+    request(
       { url: 'http://localhost:3001/bbc', json: true },
       (error, response, body) => {
-        this.setState({ results: [...this.state.results, ...body] });
+        if (error) {
+          return this.setState({ errors: [...this.state.errors, error] });
+        }
+        return this.setState({ results: [...this.state.results, ...body] });
       },
     );
-    await request(
+    request(
       { url: 'http://localhost:3001/cnn', json: true },
       (error, response, body) => {
-        this.setState({ results: [...this.state.results, ...body] });
+        if (error) {
+          return this.setState({ errors: [...this.state.errors, error] });
+        }
+        return this.setState({ results: [...this.state.results, ...body] });
       },
     );
-    await request(
+    request(
       { url: 'http://localhost:3001/npr', json: true },
       (error, response, body) => {
-        this.setState({ results: [...this.state.results, ...body] });
+        if (error) {
+          return this.setState({ errors: [...this.state.errors, error] });
+        }
+        return this.setState({ results: [...this.state.results, ...body] });
       },
     );
   }
@@ -61,7 +72,7 @@ class App extends Component {
             </Segment>
             <Card.Group>
               {filteredResults.map(article => (
-                <Card key={article.title} href={article.link} target="_blank">
+                <Card key={uuidv4()} href={article.link} target="_blank">
                   <Image src={article.thumbnail} />
                   <Card.Content>
                     <Card.Header>{article.title}</Card.Header>

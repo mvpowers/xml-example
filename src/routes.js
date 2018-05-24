@@ -30,6 +30,7 @@ router.get('/npr', (req, res) => {
     if (error) return res.send(error);
     return parseString(body, (err, result) => {
       const massaged = result.rss.channel[0].item.map(el =>
+        // console.log(el['media:content']);
         Object.assign(
           {},
           {
