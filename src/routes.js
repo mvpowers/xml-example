@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/bbc', (req, res) => {
   request('https://feeds.bbci.co.uk/news/rss.xml', (error, response, body) => {
-    if (error) return res.send(error);
+    if (error) return res.status(503).send(error);
     return parseString(body, (err, result) => {
       const massaged = result.rss.channel[0].item.map(el =>
         Object.assign(
@@ -27,10 +27,9 @@ router.get('/bbc', (req, res) => {
 
 router.get('/npr', (req, res) => {
   request('http://www.npr.org/rss/rss.php?id=1001', (error, response, body) => {
-    if (error) return res.send(error);
+    if (error) return res.status(503).send(error);
     return parseString(body, (err, result) => {
       const massaged = result.rss.channel[0].item.map(el =>
-        // console.log(el['media:content']);
         Object.assign(
           {},
           {
@@ -50,7 +49,7 @@ router.get('/cnn', (req, res) => {
   request(
     'http://rss.cnn.com/rss/cnn_topstories.rss',
     (error, response, body) => {
-      if (error) return res.send(error);
+      if (error) return res.status(503).send(error);
       return parseString(body, (err, result) => {
         const massaged = result.rss.channel[0].item.map(el =>
           Object.assign(

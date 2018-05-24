@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { Segment, Card, Loader, Image, Input } from 'semantic-ui-react';
+import {
+  Segment,
+  Card,
+  Loader,
+  Image,
+  Input,
+  Message,
+} from 'semantic-ui-react';
 
 const uuidv4 = require('uuid/v4');
 const request = require('request');
@@ -19,7 +26,9 @@ class App extends Component {
       { url: 'http://localhost:3001/bbc', json: true },
       (error, response, body) => {
         if (error) {
-          return this.setState({ errors: [...this.state.errors, error] });
+          return this.setState({
+            errors: [...this.state.errors, 'Unable to retrieve BBC'],
+          });
         }
         return this.setState({ results: [...this.state.results, ...body] });
       },
@@ -28,7 +37,9 @@ class App extends Component {
       { url: 'http://localhost:3001/cnn', json: true },
       (error, response, body) => {
         if (error) {
-          return this.setState({ errors: [...this.state.errors, error] });
+          return this.setState({
+            errors: [...this.state.errors, 'Unable to retrieve CNN'],
+          });
         }
         return this.setState({ results: [...this.state.results, ...body] });
       },
@@ -37,7 +48,9 @@ class App extends Component {
       { url: 'http://localhost:3001/npr', json: true },
       (error, response, body) => {
         if (error) {
-          return this.setState({ errors: [...this.state.errors, error] });
+          return this.setState({
+            errors: [...this.state.errors, 'Unable to retrieve NPR'],
+          });
         }
         return this.setState({ results: [...this.state.results, ...body] });
       },
@@ -49,7 +62,7 @@ class App extends Component {
   };
 
   render() {
-    const { results, search } = this.state;
+    const { results, search, errors } = this.state;
     const filteredResults = results.filter(
       article =>
         article.title.toLowerCase().indexOf(search.toLowerCase()) !== -1 ||
@@ -62,6 +75,9 @@ class App extends Component {
         ) : (
           <Segment basic>
             <Segment basic>
+              {errors.length > 0 && (
+                <Message error header="Error" list={errors} />
+              )}
               <Input
                 id="search"
                 icon="search"
